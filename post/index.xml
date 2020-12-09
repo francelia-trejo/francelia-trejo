@@ -8,12 +8,13 @@
     <language>en-US</language>
     <lastBuildDate>Wed, 09 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>test</title>
-      <link>/post/2020/12/09/test/</link>
+      <title>R and Python with Some Pandas</title>
+      <link>/post/2020/12/09/r-and-python-with-some-pandas/</link>
       <pubDate>Wed, 09 Dec 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/2020/12/09/test/</guid>
-      <description>  </description>
+      <guid>/post/2020/12/09/r-and-python-with-some-pandas/</guid>
+      <description>   Do You Mean Real Pandas? Unfortunatly no, but that would make R and Python exponentially cooler.
+ </description>
     </item>
     
   </channel>
