@@ -19,7 +19,7 @@
     <item>
       <title>Project 1</title>
       <link>/project/project1/</link>
-      <pubDate>Sun, 11 Oct 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
       
       <guid>/project/project1/</guid>
       <description>In this project, we will explore 2019 Women&#39;s World Cup statistics! Introduction The datasets chosen were because of an appreciation for women&#39;s soccer. The first data set came from the package fivethirtyeight, called &#39;wwc_2019_matches&#39; This dataset includes: date, team 1, team 2, soccer power index (spi) of team 1, spi of team 2, probability (prob) that team 1 will win the match, prob of team 2, prob that they tie, projected number of goals scored by team 1 (proj_score), proj_score2, score of team 1, score of team 2, Shot-based expected goals (xg) for team 1, xg for team 2, non-shot expected goals (nsxg) for team 1, nsxg for team 2, goals scored by team 1 accounting for the conditions under which each goal was scored (adj_score), and adj_score for team 2.</description>

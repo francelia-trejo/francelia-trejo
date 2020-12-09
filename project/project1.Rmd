@@ -1,7 +1,7 @@
 ---
 title: "Project 1"
 author: "Francelia Trejo ft3887"
-date: "2020-10-11"
+date: "2020-10-12"
 output: 
   prettydoc::html_pretty:
     theme: cayman
