@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Francelia Trejo" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="../../img/favicon.ico">
+    <title>Project 1</title>
+    <meta name="generator" content="Hugo 0.79.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../../post/">BLOG</a></li>
+        
+        <li><a href="../../projects/">PROJECTS</a></li>
+        
+        <li><a href="../../resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../../project/project1/">Project 1</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         October 11, 2020 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+<link href="../../rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="../../rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+<script src="../../rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="../../rmarkdown-libs/plotly-binding/plotly.js"></script>
+<script src="../../rmarkdown-libs/typedarray/typedarray.min.js"></script>
+<script src="../../rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="../../rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="../../rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
+<link href="../../rmarkdown-libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="../../rmarkdown-libs/plotly-main/plotly-latest.min.js"></script>
+
+
+<p>In this project, we will explore 2019 Women's World Cup statistics! <img src="../../img/USA2019.jpg" /></p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The datasets chosen were because of an appreciation for women's soccer. The first data set came from the package fivethirtyeight, called 'wwc_2019_matches' This dataset includes: date, team 1, team 2, soccer power index (spi) of team 1, spi of team 2, probability (prob) that team 1 will win the match, prob of team 2, prob that they tie, projected number of goals scored by team 1 (proj_score), proj_score2, score of team 1, score of team 2, Shot-based expected goals (xg) for team 1, xg for team 2, non-shot expected goals (nsxg) for team 1, nsxg for team 2, goals scored by team 1 accounting for the conditions under which each goal was scored (adj_score), and adj_score for team 2. I remember sitting down with my dad to watch several of these games and really enjoy the hard work and detication each team had.</p>
+<p>The second dataset came from the website, FBref, that depicted &quot;2019 Women's World Cup Scores &amp; Fixtures.&quot; The data was piped into excel, and exported as a cvs file into R Studio. In Excel, I was able to take out unnecessary/ duplicate data. The dataset 'fb_ref' includes: date, time, game (team 1, team 2), team 1 score, team 2 score, attendance, venue, and referee. I chose this dataset not only because it had the common variable of date, but also because game would be a better common variable after mutating a new column in 'wwc_2019_matches.' It also had new data such as attendance, venue, and referee. <a href="https://fbref.com/en/comps/106/schedule/Womens-World-Cup-Scores-and-Fixtures">FBref</a></p>
+</div>
+<div id="libraries" class="section level2">
+<h2>Libraries</h2>
+<pre class="r"><code>library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(viridis)
+library(cluster)
+library(plotly)
+library(GGally)</code></pre>
+</div>
+<div id="getting-data" class="section level2">
+<h2>Getting Data</h2>
+<pre class="r"><code>library(&quot;fivethirtyeight&quot;)
+data(&quot;wwc_2019_matches&quot;)
+head(wwc_2019_matches)</code></pre>
+<pre><code>## # A tibble: 6 x 18
+##   date       team1 team2  spi1  spi2 prob1  prob2 probtie proj_score1
+##   &lt;date&gt;     &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;       &lt;dbl&gt;
+## 1 2019-06-07 fran… sout…  95.3  80.8 0.694 0.114    0.192        1.9 
+## 2 2019-06-08 germ… china  94.2  82.1 0.599 0.176    0.224        1.67
+## 3 2019-06-08 spain sout…  83.6  61.5 0.592 0.130    0.278        1.27
+## 4 2019-06-08 norw… nige…  82.9  70.9 0.520 0.218    0.263        1.35
+## 5 2019-06-09 aust… italy  93.1  71.1 0.742 0.114    0.143        2.63
+## 6 2019-06-09 braz… jama…  89.1  59.8 0.803 0.0803   0.117        2.92
+## # … with 9 more variables: proj_score2 &lt;dbl&gt;, score1 &lt;dbl&gt;, score2 &lt;dbl&gt;,
+## #   xg1 &lt;dbl&gt;, xg2 &lt;dbl&gt;, nsxg1 &lt;dbl&gt;, nsxg2 &lt;dbl&gt;, adj_score1 &lt;dbl&gt;,
+## #   adj_score2 &lt;dbl&gt;</code></pre>
+<pre class="r"><code>fb_ref &lt;- read.csv(&quot;~/FBREF_WW_2019_Data.csv&quot;)
+head(fb_ref)</code></pre>
+<pre><code>##     date  time               game team.1.score team.2.score attendance
+## 1 6/7/19 21:00 france-south_korea            4            0      45261
+## 2 6/8/19 15:00      germany-china            1            0      15283
+## 3 6/8/19 18:00 spain-south_africa            3            1      12044
+## 4 6/8/19 21:00     norway-nigeria            3            0      11058
+## 5 6/9/19 13:00    australia-italy            1            2      15380
+## 6 6/9/19 15:30     brazil-jamaica            3            0      17668
+##                      venue               referee
+## 1         Parc des Princes     Claudia Umpierrez
+## 2             Roazhon Park Marie-Soleil Beaudoin
+## 3             Stade Oceane        Maria Carvajal
+## 4 Stade Auguste-Delaune II         Kate Jacewicz
+## 5         Stade du Hainaut        Melissa Borjas
+## 6          Stade des Alpes          Riem Hussein</code></pre>
+</div>
+<div id="untidyingtidying" class="section level2">
+<h2>Untidying/Tidying</h2>
+<p>Both of my dataset were relatively tidy so I decided to untidy certain columns and then proceed to organize them to ensure they were tidy (as well as show the skill).</p>
+<pre class="r"><code># this was used to make ww_2019_matches untidy
+untidy_matches &lt;- wwc_2019_matches %&gt;% pivot_wider(names_from = &quot;spi1&quot;, 
+    values_from = &quot;spi2&quot;)
+
+# this was used to make fb_ref untidy
+untidy_fbref &lt;- fb_ref %&gt;% pivot_wider(names_from = &quot;attendance&quot;, 
+    values_from = &quot;game&quot;)</code></pre>
+<p>Pivot_wider was used to make the tidy data sets untidy. On ww_2019_matches, I was able to take away the values from spi2 and placed them into the seperate spi1 columns that were created. On fb_ref, I was able to take away the values from attendance and placed them into the seperate date columns that were created.</p>
+<pre class="r"><code>matches1 &lt;- untidy_matches %&gt;% pivot_longer(cols = -(date:adj_score2), 
+    names_to = &quot;spi1&quot;)
+matches2 &lt;- na.omit(matches1)
+names(matches2)[18] &lt;- &quot;spi2&quot;
+
+fb_ref1 &lt;- untidy_fbref %&gt;% pivot_longer(cols = -(date:referee), 
+    names_to = &quot;attendance&quot;)
+fb_ref2 &lt;- na.omit(fb_ref1)
+names(fb_ref2)[8] &lt;- &quot;game&quot;
+fb_ref2[1] &lt;- NULL
+fb_ref2[2:3] &lt;- list(NULL)
+fb_ref2 %&gt;% select(&quot;game&quot;, everything())</code></pre>
+<pre><code>## # A tibble: 52 x 5
+##    game                 time  venue                referee            attendance
+##    &lt;fct&gt;                &lt;fct&gt; &lt;fct&gt;                &lt;fct&gt;              &lt;chr&gt;     
+##  1 france-south_korea   21:00 Parc des Princes     Claudia Umpierrez  45261     
+##  2 germany-china        15:00 Roazhon Park         Marie-Soleil Beau… 15283     
+##  3 spain-south_africa   18:00 Stade Oceane         Maria Carvajal     12044     
+##  4 norway-nigeria       21:00 Stade Auguste-Delau… Kate Jacewicz      11058     
+##  5 australia-italy      13:00 Stade du Hainaut     Melissa Borjas     15380     
+##  6 brazil-jamaica       15:30 Stade des Alpes      Riem Hussein       17668     
+##  7 england-scotland     18:00 Stade de Nice        Jana Adamkova      13188     
+##  8 argentina-japan      18:00 Parc des Princes     Stephanie Frappart 25055     
+##  9 canada-cameroon      21:00 Stade de la Mosson   Ri Hyang Ok        10710     
+## 10 new_zealand-netherl… 15:00 Stade Oceane         Edina Alves Batis… 10654     
+## # … with 42 more rows</code></pre>
+<pre class="r"><code># before joining, I wanted to make a new column in matches2
+# called &#39;games&#39; which combined the two teams into a new
+# column to make a better common variable other than &#39;date&#39;
+
+matches_real &lt;- (matches2 %&gt;% mutate(game = paste(team1, team2, 
+    sep = &quot;-&quot;))) %&gt;% select(&quot;date&quot;, &quot;game&quot;, everything())</code></pre>
+<p>I was able to tidy up both of the datasets using pivot_longer. I was able to get 'matches1' now 'matches2' back to how it was before tidying. With the dataset 'fb_ref1' now 'fb_ref2,' I was able to tidy it back up using pivot_longer and get rid of the unnecessary columns such as dat and both of the team scores since that data is already in 'matches2.' With this dataset, I was then able to mutate a new column called 'game' in order to be able to use that as my common variable.</p>
+</div>
+<div id="joining-the-datasets" class="section level2">
+<h2>Joining the Datasets</h2>
+<p>When joining the datasets, I ran a full join. This was because both datasets had the same 52 games and I thought it would be the most efficient way to see all the data together. At this point each dataset has distinct variables from each other, and I was not sure what to remove or keep later on. I ran a full join the datasets by 'game.'</p>
+<pre class="r"><code>fulldata &lt;- full_join(matches_real, fb_ref2, by = &quot;game&quot;)</code></pre>
+</div>
+<div id="getting-desired-variables" class="section level2">
+<h2>Getting Desired Variables</h2>
+<p>I decided to narrow down my fully joined data to just my desired variables that I was most interested in. Before separating my joined dataset again, I wanted to creat a new variable of the spread of the game. I then decided to make two separate datasets for each team keeping the variables: game, team, prob, proj_score, spi, attendance, and spread. By creating two datasets, renaming the columns to the same thing, and then full joining again by game, I would then be able to wrangle the data by country and game. Potential problems with doing this are that both the shot-based expected goals and non-shot-based expected goals could have provided more data behind each team and their preformance.</p>
+<pre class="r"><code># Mutating a varable that is dependent on another variable
+fulldata1 &lt;- fulldata %&gt;% mutate(spread = abs(score1 - score2))
+
+# Summarizing my data once more with new variable, taking out
+# unnecessary columns
+fulldata2 &lt;- fulldata1 %&gt;% mutate(spi2 = as.character(spi2))
+fulldata2[1] &lt;- NULL
+fulldata2[6] &lt;- (NULL)
+fulldata2[10:15] &lt;- list(NULL)
+fulldata2[12:14] &lt;- list(NULL)
+
+Team1 &lt;- fulldata2[, c(&quot;game&quot;, &quot;team1&quot;, &quot;prob1&quot;, &quot;proj_score1&quot;, 
+    &quot;score1&quot;, &quot;spi1&quot;, &quot;attendance&quot;, &quot;spread&quot;)]
+names(Team1)[2] &lt;- &quot;country&quot;
+names(Team1)[3] &lt;- &quot;prob&quot;
+names(Team1)[4] &lt;- &quot;projscore&quot;
+names(Team1)[5] &lt;- &quot;score&quot;
+names(Team1)[6] &lt;- &quot;spi&quot;
+Team2 &lt;- fulldata2[, c(&quot;game&quot;, &quot;team2&quot;, &quot;prob2&quot;, &quot;proj_score2&quot;, 
+    &quot;score2&quot;, &quot;spi2&quot;, &quot;attendance&quot;, &quot;spread&quot;)]
+names(Team2)[2] &lt;- &quot;country&quot;
+names(Team2)[3] &lt;- &quot;prob&quot;
+names(Team2)[4] &lt;- &quot;projscore&quot;
+names(Team2)[5] &lt;- &quot;score&quot;
+names(Team2)[6] &lt;- &quot;spi&quot;
+
+# Joined the two team datasets together
+joined &lt;- full_join(Team1, Team2, by = c(game = &quot;game&quot;, country = &quot;country&quot;, 
+    prob = &quot;prob&quot;, projscore = &quot;projscore&quot;, score = &quot;score&quot;, 
+    spi = &quot;spi&quot;, attendance = &quot;attendance&quot;, spread = &quot;spread&quot;)) %&gt;% 
+    arrange(country) %&gt;% mutate(attendance = as.numeric(attendance)) %&gt;% 
+    mutate(spi = as.numeric(spi))
+glimpse(joined)</code></pre>
+<pre><code>## Rows: 104
+## Columns: 8
+## $ game       &lt;chr&gt; &quot;argentina-japan&quot;, &quot;england-argentina&quot;, &quot;scotland-argentin…
+## $ country    &lt;chr&gt; &quot;argentina&quot;, &quot;argentina&quot;, &quot;argentina&quot;, &quot;australia&quot;, &quot;austr…
+## $ prob       &lt;dbl&gt; 0.0161, 0.0136, 0.2312, 0.7425, 0.4290, 0.8889, 0.6574, 0.…
+## $ projscore  &lt;dbl&gt; 0.38, 0.20, 0.90, 2.63, 1.55, 3.65, 1.74, 2.92, 1.37, 1.94…
+## $ score      &lt;dbl&gt; 0, 0, 3, 1, 3, 4, 1, 3, 2, 1, 1, 2, 0, 1, 0, 1, 2, 1, 0, 0…
+## $ spi        &lt;dbl&gt; 37.09, 39.07, 39.19, 93.13, 92.44, 92.82, 92.49, 89.12, 89…
+## $ attendance &lt;dbl&gt; 25055, 20294, 14319, 15380, 17032, 17402, 19045, 17668, 17…
+## $ spread     &lt;dbl&gt; 0, 1, 0, 1, 1, 3, 0, 3, 1, 1, 1, 1, 1, 2, 3, 1, 2, 1, 1, 2…</code></pre>
+</div>
+<div id="summary-statistics" class="section level2">
+<h2>Summary Statistics</h2>
+<pre class="r"><code># Finding Mean Projected Score by Country
+joined %&gt;% group_by(country) %&gt;% summarize_at(vars(projscore), 
+    list(spi.mean = mean)) %&gt;% arrange(desc(spi.mean))</code></pre>
+<pre><code>## # A tibble: 24 x 2
+##    country     spi.mean
+##    &lt;chr&gt;          &lt;dbl&gt;
+##  1 usa             2.41
+##  2 australia       2.39
+##  3 japan           2.12
+##  4 germany         1.76
+##  5 france          1.76
+##  6 england         1.75
+##  7 brazil          1.74
+##  8 netherlands     1.56
+##  9 canada          1.4 
+## 10 italy           1.24
+## # … with 14 more rows</code></pre>
+<p>I first wanted to see the mean soccer power index for each country in the tournament and arrange them from highest to lowest SPI.</p>
+<pre class="r"><code># Mean, SD, Min, Max with no grouping
+joined %&gt;% select(-game, -country) %&gt;% summarize_if(is.numeric, 
+    c(mean = mean, sd = sd, min = min, max = max, median = median)) %&gt;% 
+    pivot_longer(1:30, names_to = &quot;Var&quot;, values_to = &quot;Value&quot;) %&gt;% 
+    separate(Var, into = c(&quot;Var&quot;, &quot;Stat&quot;))</code></pre>
+<pre><code>## # A tibble: 30 x 3
+##    Var        Stat      Value
+##    &lt;chr&gt;      &lt;chr&gt;     &lt;dbl&gt;
+##  1 prob       mean      0.437
+##  2 projscore  mean      1.34 
+##  3 score      mean      1.40 
+##  4 spi        mean     80.8  
+##  5 attendance mean  21884.   
+##  6 spread     mean      1.88 
+##  7 prob       sd        0.278
+##  8 projscore  sd        0.819
+##  9 score      sd        1.67 
+## 10 spi        sd       16.7  
+## # … with 20 more rows</code></pre>
+<p>I was then able to take the mean, standard deviation, minimun, maximun, and median of each numeric variable in my dataset with no grouping.</p>
+<pre class="r"><code># Grouped by Country
+joined %&gt;% group_by(country) %&gt;% summarize_if(is.numeric, c(mean = mean, 
+    sd = sd)) %&gt;% pivot_longer(-country) %&gt;% separate(name, into = c(&quot;var&quot;, 
+    &quot;stat&quot;)) %&gt;% pivot_wider(names_from = &quot;country&quot;, values_from = &quot;value&quot;)</code></pre>
+<pre><code>## # A tibble: 12 x 26
+##    var   stat  argentina australia  brazil cameroon  canada   chile   china
+##    &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+##  1 prob  mean    8.70e-2     0.679 4.90e-1  1.34e-1 5.71e-1 1.63e-1 4.07e-1
+##  2 proj… mean    4.93e-1     2.39  1.74e+0  5.45e-1 1.40e+0 7.50e-1 1.05e+0
+##  3 score mean    1.00e+0     2.25  1.75e+0  7.50e-1 1.00e+0 6.67e-1 2.50e-1
+##  4 spi   mean    3.84e+1    92.7   8.94e+1  6.52e+1 9.27e+1 4.77e+1 8.17e+1
+##  5 atte… mean    1.99e+4 17215.    2.00e+4  1.53e+4 2.07e+4 2.50e+4 1.71e+4
+##  6 spre… mean    3.33e-1     1.25  1.50e+0  1.75e+0 1.25e+0 2.33e+0 1.00e+0
+##  7 prob  sd      1.25e-1     0.192 2.54e-1  9.62e-2 1.43e-1 2.46e-1 2.06e-1
+##  8 proj… sd      3.64e-1     0.961 9.33e-1  2.69e-1 3.90e-1 8.14e-1 2.79e-1
+##  9 score sd      1.73e+0     1.5   9.57e-1  9.57e-1 8.16e-1 1.15e+0 5.00e-1
+## 10 spi   sd      1.18e+0     0.321 2.53e-1  3.37e+0 7.32e-1 1.22e+0 1.16e+0
+## 11 atte… sd      5.38e+3  1504.    3.23e+3  7.03e+3 1.21e+4 1.79e+4 2.20e+3
+## 12 spre… sd      5.77e-1     1.26  1.00e+0  9.57e-1 5.00e-1 5.77e-1 8.16e-1
+## # … with 17 more variables: england &lt;dbl&gt;, france &lt;dbl&gt;, germany &lt;dbl&gt;,
+## #   italy &lt;dbl&gt;, jamaica &lt;dbl&gt;, japan &lt;dbl&gt;, netherlands &lt;dbl&gt;,
+## #   new_zealand &lt;dbl&gt;, nigeria &lt;dbl&gt;, norway &lt;dbl&gt;, scotland &lt;dbl&gt;,
+## #   south_africa &lt;dbl&gt;, south_korea &lt;dbl&gt;, spain &lt;dbl&gt;, sweden &lt;dbl&gt;,
+## #   thailand &lt;dbl&gt;, usa &lt;dbl&gt;</code></pre>
+<p>I then found the mean and standard deviation of each country (by grouping) and was able to see each country and their stats going across the table. I think this was one of the most useful summarizing techniques because one is clearly able to see the mean and standard deviation for each variable across country tht played in the tournament.</p>
+<pre class="r"><code># Grouped by Game
+joined %&gt;% select(-prob) %&gt;% group_by(game) %&gt;% summarize_if(is.numeric, 
+    c(mean = mean, sd = sd)) %&gt;% pivot_longer(-game) %&gt;% separate(name, 
+    into = c(&quot;var&quot;, &quot;stat&quot;)) %&gt;% pivot_wider(names_from = &quot;game&quot;, 
+    values_from = &quot;value&quot;)</code></pre>
+<pre><code>## # A tibble: 10 x 54
+##    var   stat  `argentina-japa… `australia-braz… `australia-ital…
+##    &lt;chr&gt; &lt;chr&gt;            &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+##  1 proj… mean              1.98            1.46             1.79 
+##  2 score mean              0               2.5              1.5  
+##  3 spi   mean             64.7            91.1             82.1  
+##  4 atte… mean          25055           17032            15380    
+##  5 spre… mean              0               1                1    
+##  6 proj… sd                2.26            0.127            1.19 
+##  7 score sd                0               0.707            0.707
+##  8 spi   sd               39.0             1.94            15.6  
+##  9 atte… sd                0               0                0    
+## 10 spre… sd                0               0                0    
+## # … with 49 more variables: `brazil-jamaica` &lt;dbl&gt;,
+## #   `cameroon-new_zealand` &lt;dbl&gt;, `canada-cameroon` &lt;dbl&gt;,
+## #   `canada-new_zealand` &lt;dbl&gt;, `chile-sweden` &lt;dbl&gt;, `china-spain` &lt;dbl&gt;,
+## #   `england-argentina` &lt;dbl&gt;, `england-cameroon` &lt;dbl&gt;,
+## #   `england-scotland` &lt;dbl&gt;, `england-sweden` &lt;dbl&gt;, `england-usa` &lt;dbl&gt;,
+## #   `france-brazil` &lt;dbl&gt;, `france-norway` &lt;dbl&gt;, `france-south_korea` &lt;dbl&gt;,
+## #   `france-usa` &lt;dbl&gt;, `germany-china` &lt;dbl&gt;, `germany-nigeria` &lt;dbl&gt;,
+## #   `germany-spain` &lt;dbl&gt;, `germany-sweden` &lt;dbl&gt;, `italy-brazil` &lt;dbl&gt;,
+## #   `italy-china` &lt;dbl&gt;, `italy-netherlands` &lt;dbl&gt;, `jamaica-australia` &lt;dbl&gt;,
+## #   `jamaica-italy` &lt;dbl&gt;, `japan-england` &lt;dbl&gt;, `japan-scotland` &lt;dbl&gt;,
+## #   `netherlands-cameroon` &lt;dbl&gt;, `netherlands-canada` &lt;dbl&gt;,
+## #   `netherlands-japan` &lt;dbl&gt;, `netherlands-sweden` &lt;dbl&gt;,
+## #   `new_zealand-netherlands` &lt;dbl&gt;, `nigeria-france` &lt;dbl&gt;,
+## #   `nigeria-south_korea` &lt;dbl&gt;, `norway-australia` &lt;dbl&gt;,
+## #   `norway-england` &lt;dbl&gt;, `norway-nigeria` &lt;dbl&gt;, `scotland-argentina` &lt;dbl&gt;,
+## #   `south_africa-china` &lt;dbl&gt;, `south_africa-germany` &lt;dbl&gt;,
+## #   `south_korea-norway` &lt;dbl&gt;, `spain-south_africa` &lt;dbl&gt;, `spain-usa` &lt;dbl&gt;,
+## #   `sweden-canada` &lt;dbl&gt;, `sweden-thailand` &lt;dbl&gt;, `sweden-usa` &lt;dbl&gt;,
+## #   `thailand-chile` &lt;dbl&gt;, `usa-chile` &lt;dbl&gt;, `usa-netherlands` &lt;dbl&gt;,
+## #   `usa-thailand` &lt;dbl&gt;</code></pre>
+<p>I then found the mean and standard deviation of each game (by grouping) and was able to see each game and their stats going across the table. I took out the variable probability of wining because this was grouped by game and not country.</p>
+<pre class="r"><code># Min and Max Attendance
+distinct1 &lt;- joined %&gt;% distinct(game, .keep_all = T)
+distinct1 %&gt;% top_n(1, attendance) %&gt;% select(game, attendance)</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##   game            attendance
+##   &lt;chr&gt;                &lt;dbl&gt;
+## 1 usa-netherlands      57900</code></pre>
+<pre class="r"><code>distinct1 %&gt;% top_n(-1, attendance) %&gt;% select(game, attendance)</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##   game                 attendance
+##   &lt;chr&gt;                     &lt;dbl&gt;
+## 1 cameroon-new_zealand       8009</code></pre>
+<p>Here I just wanted to see the highest and lowest attending game. Max being USA vs Netherlands with 57,900 people, and the min being the Cameroon vs New Zealand with 8,009 people.</p>
+<pre class="r"><code># Min and Max SPI
+distinct1 %&gt;% top_n(1, spi) %&gt;% select(country, spi)</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##   country   spi
+##   &lt;chr&gt;   &lt;dbl&gt;
+## 1 france   96.8</code></pre>
+<pre class="r"><code>distinct1 %&gt;% top_n(-1, spi) %&gt;% select(country, spi)</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##   country     spi
+##   &lt;chr&gt;     &lt;dbl&gt;
+## 1 argentina  37.1</code></pre>
+<p>Here I was able to see that France had the max SPI of 96.79 and Argentina had the min SPI of 37.09.</p>
+<pre class="r"><code># Group by Country and Game
+joined %&gt;% group_by(game, country) %&gt;% summarize(med.spi = median(spi))</code></pre>
+<pre><code>## # A tibble: 104 x 3
+## # Groups:   game [52]
+##    game                 country     med.spi
+##    &lt;chr&gt;                &lt;chr&gt;         &lt;dbl&gt;
+##  1 argentina-japan      argentina      37.1
+##  2 argentina-japan      japan          92.3
+##  3 australia-brazil     australia      92.4
+##  4 australia-brazil     brazil         89.7
+##  5 australia-italy      australia      93.1
+##  6 australia-italy      italy          71.1
+##  7 brazil-jamaica       brazil         89.1
+##  8 brazil-jamaica       jamaica        59.8
+##  9 cameroon-new_zealand cameroon       65.8
+## 10 cameroon-new_zealand new_zealand    77.6
+## # … with 94 more rows</code></pre>
+<p>Here I wanted to see the median spi by grouping by country and game. In the game for Argentina and Japan, Argentina had a median SPI of 37.09 and Japan 92.29... the rest is presented in the table.</p>
+<pre class="r"><code># Grouped by by Attendance greater than 19000
+joined %&gt;% filter(attendance &gt;= 19000) %&gt;% summarize(mean.spread = mean(spread), 
+    max.score = max(score), min.score = min(score), max.projscore = max(projscore), 
+    min.projscore = min(projscore))</code></pre>
+<pre><code>## # A tibble: 1 x 5
+##   mean.spread max.score min.score max.projscore min.projscore
+##         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt;
+## 1        1.44         4         0          4.42           0.2</code></pre>
+<p>As a start to see if attendance was related to score/projected score, I wanted to see the mean spread of the score, and the max and min for score and projected score for games where the attendance was greater than 19,000 people. I found that the most attended games only had a max score of 4, max projected score of 4.42, min score of 0, and min projected score of 0.2.</p>
+<pre class="r"><code># Correlation
+joined[, 3:7] %&gt;% cor()</code></pre>
+<pre><code>##                  prob  projscore       score       spi  attendance
+## prob       1.00000000 0.88722402  0.55072551 0.7023188  0.07959813
+## projscore  0.88722402 1.00000000  0.60767909 0.5456365  0.01602165
+## score      0.55072551 0.60767909  1.00000000 0.2830260 -0.06093639
+## spi        0.70231878 0.54563651  0.28302599 1.0000000  0.33500657
+## attendance 0.07959813 0.01602165 -0.06093639 0.3350066  1.00000000</code></pre>
+<p>Finally I ran a correlation matrix based on all the numeric value in my dataset to start looking at the different correlations in my data, with the biggest correlaton being between probablity of winning and projected score.</p>
+</div>
+<div id="making-visualizations" class="section level2">
+<h2>Making Visualizations</h2>
+<pre class="r"><code># Making a Correlation heat map
+cormat &lt;- joined %&gt;% select_if(is.numeric) %&gt;% cor(use = &quot;pair&quot;)
+
+soccercor &lt;- cormat %&gt;% as.data.frame %&gt;% rownames_to_column(&quot;var1&quot;) %&gt;% 
+    pivot_longer(-1, names_to = &quot;var2&quot;, values_to = &quot;correlation&quot;)
+
+soccercor %&gt;% ggplot(aes(var1, var2, fill = correlation)) + geom_tile(color = &quot;grey&quot;) + 
+    scale_fill_gradient2(low = &quot;blue&quot;, mid = &quot;lightblue&quot;, high = &quot;yellow&quot;, 
+        midpoint = 0, limit = c(-1, 1), space = &quot;Lab&quot;, name = &quot;Correlation&quot;) + 
+    theme_minimal() + geom_text(aes(label = round(correlation, 
+    2)), color = &quot;black&quot;, size = 3) + theme(axis.text.x = element_text(angle = 45, 
+    vjust = 1, size = 9, hjust = 1)) + coord_fixed()</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /> In the correlation heat map, one is able to visually see the different correlations with the various numeric variables in the data. There was a negative correlation between spread and spi, and a strong correlation bewteen projected score and probability of winning.</p>
+<pre class="r"><code># Visualizing Mean SPI Across Country
+ggplot(joined, aes(x = reorder(country, spi), y = spi)) + geom_point(stat = &quot;summary&quot;, 
+    fun = mean, col = &quot;#14B4CB&quot;, size = 3) + geom_segment(aes(x = country, 
+    xend = country, y = min(spi), yend = max(spi)), linetype = &quot;dashed&quot;, 
+    size = 0.1) + labs(title = &quot;Dot Plot&quot;, subtitle = &quot;Country Vs Avg. SPI&quot;) + 
+    coord_flip() + xlab(&quot;Average SPI&quot;) + ylab(&quot;Country&quot;) + theme(panel.background = element_rect(fill = &quot;#FFD46C&quot;, 
+    colour = &quot;#FFD46C&quot;, size = 0.5, linetype = &quot;solid&quot;), panel.grid.major = element_line(size = 0.5, 
+    linetype = &quot;solid&quot;, colour = &quot;darkgray&quot;), panel.grid.minor = element_line(size = 0.25, 
+    linetype = &quot;solid&quot;, colour = &quot;darkgray&quot;))</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /> In this first graph, I wasnted to display the average mean soccer power index across each country. I arranged them in order from least to highest and was able to see that the winners, Team USA, had the highest SPI throughout the entire tournament. Argentina had the lowest SPI.</p>
+<pre class="r"><code># Visualizing Scores vs Projected Scores Across Country
+sumscore &lt;- joined %&gt;% group_by(country) %&gt;% summarise(score = sum(score))
+sumproj &lt;- joined %&gt;% group_by(country) %&gt;% summarise(projscore = sum(projscore))
+sumjoin &lt;- full_join(sumscore, sumproj, by = &quot;country&quot;)
+sumjoin1 &lt;- sumjoin %&gt;% pivot_longer(cols = c(&quot;score&quot;, &quot;projscore&quot;), 
+    names_to = &quot;variable&quot;, values_to = &quot;score&quot;)
+ggplot(sumjoin1, aes(x = country, y = score, fill = variable)) + 
+    geom_bar(stat = &quot;identity&quot;, position = &quot;dodge&quot;) + theme(axis.text.x = element_text(angle = 90, 
+    vjust = 0.5, hjust = 1)) + ggtitle(&quot;Total Projected Scores vs Actual Scores Across Country&quot;) + 
+    xlab(&quot;Country&quot;) + ylab(&quot;Projected Score vs Score&quot;) + scale_fill_manual(&quot;Different Scores&quot;, 
+    values = c(&quot;#0744C4&quot;, &quot;#FFD429&quot;)) + theme(panel.background = element_rect(fill = &quot;#DEFFA9&quot;, 
+    colour = &quot;#DEFFA9&quot;, size = 0.5, linetype = &quot;solid&quot;), panel.grid.major = element_line(size = 0.5, 
+    linetype = &quot;solid&quot;, colour = &quot;darkgray&quot;), panel.grid.minor = element_line(size = 0.25, 
+    linetype = &quot;solid&quot;, colour = &quot;darkgray&quot;))</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /> In this second graph I wanted to visually see if the total projected score (points) for each country was close to to the total points they actually scored in each game of the tournament. After adding the total projected points and actual points scored, I visually showed it in a bar plot. There were countries that did better, about projected, and less than projected across the board.</p>
+<pre class="r"><code># Visualizing Mean Attendance Across Projected Scores
+ggplot(joined, aes(x = reorder(game, projscore), y = attendance)) + 
+    geom_point(aes(color = projscore)) + geom_point(stat = &quot;summary&quot;, 
+    fun.y = mean, size = 0.7, shape = &quot;circle&quot;, aes(color = projscore)) + 
+    scale_y_continuous(name = &quot;Attendance&quot;) + ggtitle(&quot;Attendance Across Projected Scores&quot;) + 
+    xlab(&quot;Game&quot;) + theme(axis.text.x = element_text(angle = 90, 
+    vjust = 0.5, hjust = 1)) + scale_color_viridis(option = &quot;plasma&quot;) + 
+    theme(panel.background = element_rect(fill = &quot;#C1F7FF&quot;, colour = &quot;#C1F7FF&quot;, 
+        size = 0.5, linetype = &quot;solid&quot;), panel.grid.major = element_line(size = 0.5, 
+        linetype = &quot;solid&quot;, colour = &quot;darkgray&quot;), panel.grid.minor = element_line(size = 0.25, 
+        linetype = &quot;solid&quot;, colour = &quot;darkgray&quot;))</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /> In the final graph I wanted to visually see if there was any correlation between the attendance at each game and the mean projected score for each game. I odered the games by increasing projected score. I found that there was no real correlation between a game with a higher score projected and the people that attended. The game with the highest attendance was not the highed projected scoring game.</p>
+</div>
+<div id="pam" class="section level2">
+<h2>PAM</h2>
+<pre class="r"><code>pam_dat &lt;- joined %&gt;% dplyr::select_if(is.numeric)
+wwc_width &lt;- vector()  #created an empty vector 
+for (i in 2:10) {
+    pam_fit &lt;- pam(pam_dat, k = i)
+    wwc_width[i] &lt;- pam_fit$silinfo$avg.width
+}
+ggplot() + geom_line(aes(x = 1:10, y = wwc_width)) + scale_x_continuous(name = &quot;k&quot;, 
+    breaks = 1:10)  #first plot to show clusters </code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>wwcpam1 &lt;- pam_dat %&gt;% pam(k = 3)
+plot(wwcpam1, which = 2)  #plot to show the values </code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-20-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>final &lt;- joined %&gt;% select(-game, -country) %&gt;% scale %&gt;% as.data.frame
+pam2 &lt;- final %&gt;% pam(3)</code></pre>
+<p>After running the silhouette widths, indexes how cohesive and separated clusters are simultaneously, I was able to determine my data most likely has 3 clusters. Using this, I was then able to make different visualizations using the 3 cluster model. All of the three peaks has a silhouette widths within the reasonable structure range, (0.56, 0.68, and 0.63). This further confirmed that it would be best to use three clusters.</p>
+<pre class="r"><code>final &lt;- final %&gt;% mutate(cluster = as.factor(pam2$clustering))
+
+ggplot(final, aes(x = prob, y = spi, color = projscore, shape = cluster)) + 
+    geom_point() + scale_color_viridis(option = &quot;plasma&quot;) + ggtitle(&quot;PAM Plot&quot;) + 
+    xlab(&quot;Probability of Winning&quot;) + ylab(&quot;SPI&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>final %&gt;% plot_ly(x = ~prob, y = ~projscore, z = ~spi, color = ~cluster, 
+    type = &quot;scatter3d&quot;, mode = &quot;markers&quot;)</code></pre>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"ab06ce56fe2":["function () ","plotlyVisDat"]},"cur_data":"ab06ce56fe2","attrs":{"ab06ce56fe2":{"x":{},"y":{},"z":{},"mode":"markers","color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"prob"},"yaxis":{"title":"projscore"},"zaxis":{"title":"spi"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":[-1.51614012873116,-1.52514812982507,-0.741091714611472,-0.636238581878403,-1.28841786107722,-1.42245691735454,-1.0192587883913,-1.43975227945484,-1.55469437341308,0.0353979796832462,-1.16158520567502,-0.702897789973309,-1.43038395831718,-1.28481466063965,-0.574623854396085,-1.44948092063626,-0.790095240562322,-1.24013497521388,0.32041113429444,-1.47938748426803,-1.37885819206003,-1.06033527337951,-1.4804684443993,-1.10465463876153,-0.367800149279997,-1.53199421065644,-1.48263036466183],"y":[-1.17286064508637,-1.39255197264307,-0.538196809922562,-0.501581588663112,-1.09963020256747,-1.25829616135842,-1.02639976004857,-1.30711645637102,-1.28270630886472,0.426004016576298,-0.477171441156812,0.108672098994394,-0.709067842466664,-0.599222178688313,-0.513786662416262,-1.29491138261787,-0.709067842466664,-1.11183527632062,0.194107615266445,-1.27050123511157,-0.965374391282817,-1.02639976004857,-1.38034689888992,-1.11183527632062,0.120877172747544,-1.14845049758007,-1.34373167763047],"z":[-2.62129505009284,-2.50245612864586,-2.49525376977029,-0.895729902819759,-1.09439496847103,-1.08539201987656,-0.664654222228407,-1.90886171798392,-1.98988825533414,-2.05470948521431,-0.579426308867441,-1.35788126400246,-1.63517208071209,-1.25944902603628,-0.688061888574025,-0.547015693927355,-0.592030436899696,-0.651449897623187,-1.60756303835572,-1.80142653142327,-1.70179390031115,-1.35187929827282,-1.44490976708232,-1.15561501891341,-2.4052242838256,-1.82063282175813,-2.2359688502496],"mode":"markers","type":"scatter3d","name":"1","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"frame":null},{"x":[1.10122466911423,1.62873321317338,1.31813733545549,0.515344277966571,1.08032610657637,0.493004435253683,1.59198056871024,1.72457834481254,1.47415591440195,0.913858246360983,0.928271048111233,0.765766708377164,1.18409827917817,1.44172711046389,1.69503210122453,1.48820839610844,0.492644115209927,1.42623334858237,1.78799467251364,1.37254566206269,0.660913575644095,1.25580196788566,0.559303323304833,1.5462199231532,1.38912038407548,1.85249196034601,1.92743852944731,0.813689274196745,0.625241891312227,1.2521987674481,0.85548639927247],"y":[1.57328094937241,2.81819847219372,1.92722808821376,0.731130860405051,0.645695344133,0.267338057785346,1.58548602312556,1.85399764569486,0.535849680354649,0.157492394006995,0.68231056539245,0.450414164082598,0.438209090329448,1.09728307299956,1.0362577042338,1.0606678517401,1.12169322050585,1.63430631813816,2.73276295592167,0.987437409221203,0.340568500304247,0.926412040455453,-0.0866090810560077,1.30476932680311,0.950822187961753,3.25758112730713,3.75798915118628,0.450414164082598,0.450414164082598,0.779951155417651,0.352773574057397],"z":[0.7422065448005,0.723600451038599,0.501527719041716,0.522534599095475,0.688188853233691,0.670783152617718,0.716398092163025,0.68278708407701,0.686388263514797,0.713397109298202,0.873649594279736,0.919864730398007,0.951074952192164,0.932468858430263,0.85024192793412,0.780619125470231,-0.498399771517227,0.60896290560237,0.691790032671478,0.771616176875763,0.754210476259791,0.753610279686826,0.169018817619354,0.342475627206109,0.307064029401201,0.987086746570036,1.05430876274207,1.04890699358539,1.05430876274207,1.0639119079095,1.05971053189875],"mode":"markers","type":"scatter3d","name":"2","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"frame":null},{"x":[-0.02837866806161,0.794592311877664,-0.338974545779497,-0.729201153167516,-0.178632126307966,0.543088921335802,-0.529944168970309,-0.93818677854614,0.561465243567371,0.47030427249704,-0.400589273261816,0.641456293281258,0.0678267836213087,0.0714299840588711,0.585246366455283,0.283298169787546,0.685415338619521,-0.792257160824859,-0.0154071464863851,-0.800904841875009,-0.511207526694985,-0.206016449633441,-0.334650705254422,0.482555153984752,0.522190358797939,-0.358792148186091,-0.853511568263422,-0.888822932551534,0.167275115698034,0.297710971537796,-0.33969518586701,-0.458961120350328,-1.08555767644245,0.186011757973359,-0.640562422403478,-1.1633868058938,0.0638632631399899,-0.797301641437447,-0.710824830935947,-0.0672932327872849,-0.959445661127759,-0.0881917953251475,-0.230518212608866,-0.0276580279740974,-0.186559167270604,0.383467141951783],"y":[0.255132984032196,0.487029385342048,0.0354416564754937,-0.757888137479265,-0.220864892340659,-0.403940998637911,-0.599222178688313,-0.684657694960364,-0.00117356478395674,-0.123224302315458,-0.440556219897362,-0.29409533485956,0.0720568777349438,-0.111019228562308,0.401593869069997,0.169697467760145,-0.0988141548091579,-0.29409533485956,-0.403940998637911,-0.538196809922562,-0.33071055611901,-0.220864892340659,-0.31850548236586,-0.233069966093809,0.487029385342048,-0.31850548236586,-0.513786662416262,-0.684657694960364,0.0354416564754937,0.0110315089691934,-0.24527503984696,-0.648042473700914,-0.867733801257616,0.0720568777349438,-0.489376514909962,-0.892143948763916,-0.0988141548091579,-0.635837399947764,-0.513786662416262,-0.31850548236586,-0.684657694960364,-0.721272916219814,-0.599222178688313,-0.513786662416262,-0.721272916219814,0.084261951488094],"z":[0.700792981265946,0.703793964130769,0.536339120273659,0.509930471063219,0.765614211146117,0.738605365362712,0.11440092947958,0.0801897248206002,0.0681857933613099,-0.04645175207492,0.766814604292047,0.796824432940275,0.66958275947179,0.961878490505526,0.804626988388814,0.786020894626912,0.847841141642261,-0.277527432666272,-0.305136475022641,-0.201302467899774,0.572951111224497,0.542941282576269,0.715197699017096,0.768014997437976,0.716998288735989,0.792022860356557,0.133007023241481,0.00516515320003137,-0.188698339867518,0.128805647230729,0.111399946614757,0.20022903941351,0.197828253121653,0.175020783349,-0.264323108061052,-0.000236615956648943,-0.149085366051858,0.458913762361232,0.346076806643897,0.346076806643897,0.461314548653091,0.395893122199954,0.461914745226055,0.530337154544013,0.480520838987956,1.06451210448246],"mode":"markers","type":"scatter3d","name":"3","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>ggpairs(final, aes(color = cluster))</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-21-3.png" width="672" style="display: block; margin: auto;" /> There are three clusters shown in the first three graphs. The PAM plot visualizes the relationship between SPI, probability of winning, and projected score. The three clusters are also visibily seen through the different shapes. The plotly graph allows you to see the third variable (projected score) on the graphical scale, instead of the color of the plots themselves. This then gives a different way to view the data. From this data I concluded that as the probability of winning a game increases, it is positively correlated with SPI along with the projected score (also increasing). Therefore, a stong soccer power index will be positively correlated with the projected score of the game and the probability of winning.</p>
+<p>The End.</p>
+</div>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../../js/docs.min.js"></script>
+<script src="../../js/main.js"></script>
+
+<script src="../../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

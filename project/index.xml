@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projects on My Website</title>
+    <link>/project/</link>
+    <description>Recent content in Projects on My Website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sun, 22 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="/project/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Project 2</title>
+      <link>/project/project2/</link>
+      <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project2/</guid>
+      <description>In this project, we will explore will explore patient interactions with medial doctors! Libraries library(tidyverse) library(tidyr) library(dplyr) library(ggplot2) library(scales) library(viridis) library(cluster) library(plotly) library(GGally) library(lmtest) library(sandwich) library(plotROC) library(readr) library(pROC) library(glmnet)  0. Introduction The dataset that I chose was from a cross-section from 1977–1978 of contacts with a medical doctor. It presents 20,186 observations from people who have had encounters with a medical doctor. This dataset includes variables: log of annual participation incentive payment (lpi); whether or not the patients have a physical limitation (physlim); number of chronic diseases (ndisease); self–rate health including: excellent,good,fair, and poor (health); log of annual family income in dollars (linc); log of family size (lfam); age in years (age); and sex (sex).</description>
+    </item>
+    
+    <item>
+      <title>Project 1</title>
+      <link>/project/project1/</link>
+      <pubDate>Sun, 11 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project1/</guid>
+      <description>In this project, we will explore 2019 Women&#39;s World Cup statistics! Introduction The datasets chosen were because of an appreciation for women&#39;s soccer. The first data set came from the package fivethirtyeight, called &#39;wwc_2019_matches&#39; This dataset includes: date, team 1, team 2, soccer power index (spi) of team 1, spi of team 2, probability (prob) that team 1 will win the match, prob of team 2, prob that they tie, projected number of goals scored by team 1 (proj_score), proj_score2, score of team 1, score of team 2, Shot-based expected goals (xg) for team 1, xg for team 2, non-shot expected goals (nsxg) for team 1, nsxg for team 2, goals scored by team 1 accounting for the conditions under which each goal was scored (adj_score), and adj_score for team 2.</description>
+    </item>
+    
+  </channel>
+</rss>

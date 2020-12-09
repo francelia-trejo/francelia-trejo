@@ -1,0 +1,302 @@
+---
+title: "Project 2"
+author: "Francelia Trejo ft3887"
+date: "2020-11-22"
+output: 
+  prettydoc::html_pretty:
+    theme: hpstr
+    highlight: github
+---
+
+In this project, we will explore will explore patient interactions with medial doctors!
+![](/img/doctor.jpg)
+
+```{r global_options, include=FALSE}
+#LEAVE THIS CHUNK ALONE!
+library(knitr)
+opts_chunk$set(fig.align="center", fig.height=5, message=FALSE, warning=FALSE, fig.width=8, tidy.opts=list(width.cutoff=60),tidy=TRUE)
+
+#HERE'S THE CLASSIFICAITON DIAGNOSTICS FUNCTION
+class_diag<-function(probs,truth){
+  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+  f1=2*(sens*ppv)/(sens+ppv)
+
+  if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE){
+    truth<-as.numeric(truth)-1}
+  
+  #CALCULATE EXACT AUC
+  ord<-order(probs, decreasing=TRUE)
+  probs <- probs[ord]; truth <- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+  TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  
+  n <- length(TPR)
+  auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,f1,auc)
+}
+```
+
+## Libraries
+
+```{R}
+library(tidyverse); library(tidyr); library(dplyr); library(ggplot2); library(scales); library(viridis); library(cluster); library(plotly); library(GGally); library(lmtest); library(sandwich); library(plotROC); library(readr); library(pROC); library(glmnet)
+```
+
+## 0. Introduction
+The dataset that I chose was from a cross-section from 1977–1978 of contacts with a medical doctor. It presents 20,186 observations from people who have had encounters with a medical doctor. This dataset includes variables: log of annual participation incentive payment (lpi); whether or not the patients have a physical limitation (physlim); number of chronic diseases (ndisease); self–rate health including: excellent,good,fair, and poor (health); log of annual family income in dollars (linc); log of family size (lfam); age in years (age); and sex (sex). 
+
+I decided to take out variables like wheter or not they were under 18 because I actually narrowed down the dataset to only include patients over the age of 18. I also chose a random sample of 5,000 patients to proceed with the rest of the analysis. In total there are 11 variables recorded for 5,000 patients. 
+
+#Data
+```{R}
+doctor <- read.csv("~/DoctorContacts.csv")
+
+#Cleaning up and getting desired vairables
+doctor[1:3] <- NULL
+doctor[1] <- NULL
+doctor[2] <- NULL
+doctor[11] <- NULL
+doctor[10] <- NULL
+head(doctor)
+
+set.seed(1234)
+doctor = filter(doctor, age > 18)
+sample1 <- doctor %>%sample_n(5000)
+```
+
+## 1. MANOVA
+
+```{R}
+library(rstatix)
+
+group <- sample1$health 
+DVs <- sample1 %>% select(age,ndisease,linc,lfam)
+
+#Test multivariate normality for each group (null: assumption met)
+#Some of my p-values were <.05, so I stopped here.
+sapply(split(DVs,group), mshapiro_test)
+
+#MANOVA
+man1<-manova(cbind(age,ndisease,linc,lfam)~health, data=sample1)
+summary(man1)
+# Univariate ANOVAs
+summary.aov(man1)
+pairwise.t.test(sample1$age, sample1$health, p.adj = "none")
+pairwise.t.test(sample1$ndisease, sample1$health, p.adj = "none")
+pairwise.t.test(sample1$linc, sample1$health, p.adj = "none")
+pairwise.t.test(sample1$lfam, sample1$health, p.adj = "none")
+
+# Did 1 MANOVA, 4 ANOVAs, 24 t-tests 
+0.05/29
+type1overall<- 1-(1-0.05)^29 
+type1overall
+
+```
+*A one-way MANOVA was conducted to determine the effect of the patients health responses (excellent, good, fair, and poor) on 4 dependent variables (age, number of chronic illess, log of income, and log of family size).*
+
+*Significant differences were found among the three health ratings for at least one of the dependent variables, Pillai trace = 0.15229, pseudo F (14,985) = 66.782 , p = 2.2e-16.*
+
+*Univariate ANOVAs for each dependent variable were conducted as follow-up tests to the MANOVA, using the Bonferroni method for controlling Type I error rates for multiple comparisons. The univariate ANOVAs for age, number of chronic illess, and log of income were significant, F (3,4996) = 71.562, p = 2.2e-16, F (3,4996) = 160.71, p = 2.2e-16, and F (3,4996) = 71.893, p = 2.2e-16 respectively. The univariate ANOVA for log of family was not significant, F (3,4996) = 2.3044, p = 0.07485*
+
+*Post hoc analysis was performed conducting pairwise comparisons to determine which Role differed in age, number of chronic illess, log of income, and log of family size. All four health states were found to differ significantly from each other in terms of sepal length and petal width after adjusting for multiple comparisons (bonferroni α = 0.05/29 = 0.001724138).*
+
+*The assumptions of multivariate normal distribution was violated because values were less than 0.05 and therefore further testing was halted (homogeneity of vcov mats assumption were not met).*
+
+## 2. Permutation Test
+
+```{R}
+
+obs_F<-71.893 #observed F statistic
+
+Fs<-replicate(5000,{ 
+  new<-sample1%>%mutate(linc=sample(linc))
+  SSW<-new%>%group_by(health)%>%summarize(SSW=sum((linc-mean(linc))^2), .groups='drop') %>%summarize(sum(SSW), .groups = 'drop') %>% pull
+  SSB<- new%>%mutate(mean=mean(linc))%>%group_by(health)%>%mutate(groupmean=mean(linc)) %>% summarize(SSB=sum((mean-groupmean)^2), .groups = 'drop')%>%summarize(sum(SSB), .groups = 'drop')%>%pull
+  (SSB/3)/(SSW/4996) 
+  })
+
+pf(71.893, df1 = 3, df2 = 4996, lower.tail = F)
+
+summary(aov(linc~health, data = sample1))
+
+#plot null distribution and observed F statistic
+hist(Fs, prob=T); abline(v = obs_F, col="red",add=T)
+
+mean(Fs>obs_F)
+
+```
+*I chose to run a permutation test as my randomization test. This test is able to determine whether the observed difference between the sample means is large enough. The null hypothesis is that all of the health responses have the same group mean for the 4 dependent variables (age, number of chronic illess, log of income, and log of family size). The alternative hypothesis is that all of the health responses do not have the same group mean for the 4 dependent variables (age, number of chronic illess, log of income, and log of family size).*
+
+*We can reject the null hypothesis because none of the 5000 F-statistics generated under the null hypothsis were bigger than our actual F-statistic (71.893); therefore, the p-value is efectively 0.*
+
+## 3. Regression Model
+
+```{R}
+doctor_fit<- lm(lfam~age*health, data = sample1)
+summary(doctor_fit)
+
+doctor_fit %>% ggplot(aes(age, lfam, color = health)) + 
+    geom_point() + geom_smooth(method = "lm")
+```
+*The predicted value for family size for the reference group which in this case is people who claim they have excellent health but also in age of 0 is 1.163214 For every one year of age increase for people who rated themselves excellent health, the family decreases by 0.002329 Controlling for age, popele who have fair health have 0.558124 more family members than people with excellent health. Controlling for age, popele who have good health have 0.222962 more family members than people with excellent health. Controlling for age, popele who have poor health have 0.643071 more family members than people with excellent health. For every one year of age increase for people who rated themselves fair health, the family decreases by 0.014754. For every one year of age increase for people who rated themselves good health, the family decreases by 0.005822 For every one year of age increase for people who rated themselves poor health, the family decreases by 0.015527*
+
+```{R}
+#Assumptions
+resids <- lm(lfam~age*health, data = sample1)$residuals
+ggplot() + geom_histogram(aes(resids))  #normality
+
+ggplot() + geom_qq(aes(sample = resids)) + geom_qq_line(aes(sample = resids))  #linearity
+
+bptest(doctor_fit) #reject null which is that it is homoskedastic (p-value=2.2e-16)  
+```
+*Since the values are discrete and not continous all of my assumptions were not met (normality, linearit, and homoskedastic).*
+
+```{R}
+coeftest(doctor_fit)
+coeftest(doctor_fit, vcov=vcovHC(doctor_fit))
+```
+
+*After recomputing with robust standard errors, there was an incease in the standard error values along with a decrease in p-values, thus meaning less variables were significant. The variables that were signifcant went down in the level of significance. These larger standard errors make it more difficult to reject the null and account for extra noise.*
+
+```{R}
+# Proportion of variance explained
+pro_var = lm(lfam~age*health, data = sample1)
+summary(pro_var)$adj.r.squared
+```
+*In order to find the proportion of variance explained by my model was found by using the adjusted r squared value. This value was 0.03174383*
+
+## 4. Bootstrapped Regression 
+
+```{R}
+#Resampling Observations
+samp_distn <- replicate(5000, {
+    boot_stats <- sample_frac(sample1, replace = T)
+    fit <- lm(lfam~age*health, data = boot_stats)
+    coef(fit)
+})
+
+samp_distn %>% t %>% as.data.frame %>% summarize_all(sd)
+
+```
+*The same regression model, the one with the interactions was ran. This time, the bootstrapped standard errors were computed. We can see that the standard error values are similar to those of the uncorrected standard errors in #3. But what is different due to the randomization of bootstrapping, the values fluctuate above and below the uncorrected standard errors.  Also, the robust SE are all higher than bootstapped values which indicated that the p-values for the robust would also be higher. In concluciosn, bootstapping produces similar (not exact) standard errors, p-vaules, and consequently significance findings as the uncorrected regression but has values that are consistently lower than the values found using robust standard errors. Robust standard errors still have the lowest likelihood of producing a false positive.*
+
+## 5. Logistic Regression 
+
+```{R}
+#Logistic Regression 
+fit <- glm(physlim ~ linc + age, family = "binomial", data = sample1)
+coeftest(fit)
+exp(coef(fit))
+
+#Confusion Matrix
+probs <- predict(fit, type = "response")
+table(predict = as.numeric(probs > 0.5), truth = sample1$physlim) %>% addmargins
+```
+*The predictive odds of having a physical limitation for a person with 0 log income and 0 age is 0.1259776 (p-value=2.2e-16). Every one unit increase in log income multiplies the odds of having a physical limitation by 0.8971760 (p-value=4.347e-05). Every one unit increase in age multiplies the odds of having a physical limitatation by 1.0408985 (p-value=2.2e-16).*
+
+```{R}
+#Compute and discuss the Accuracy,(TPR), (TNR), (PPV), and AUC of model
+class_diag(probs, sample1$physlim)
+```
+*My model preformed poorly as shown from an AUC value of 0.6412519 From the confusion matrix, we can determine that the accuracy is 0.8132, the sensitivity is 0.002141328, the specificity is 0.9995081, and the precision is 0.5. Based on the low accurcay, sensitivy, precision, and auc values, the total classification is pretty poor, the true positive rate and the positive predicted value are low, and the the model overall is a poor predictor. However, the high specificity means that the true negative rate is high.*
+
+```{R}
+#ggplot of density plot of log-odds
+logit_fit <- glm(physlim ~ linc + age, data = sample1, family = binomial(link = "logit"))
+sample1$logit <- predict(logit_fit)
+ggplot(data = sample1, aes(logit, fill = physlim)) + geom_density(alpha = 0.3) + 
+    geom_vline(xintercept = 0, lty = 2)
+
+#generate a ROC curve
+ROCplot <- ggplot(sample1) + geom_roc(aes(d = physlim, m = probs), 
+    n.cuts = 0)
+ROCplot
+calc_auc(ROCplot)
+```
+*Ideally, a ROC plot resembles a sharp right angle; however, my ROC plot looks like a slight curve, thus, reflecting the low auc value of 0.6412764 and the poor predictivity of the model.*
+
+## 6. Logistic Regression 2
+
+```{R}
+#Logistic regression  
+fit <- glm(physlim ~., family = "binomial", data = sample1)
+summary(fit)
+prob <- predict(fit, type="response")
+
+#Classification diagnostics
+class_diag(prob, sample1$physlim)
+```
+
+*My model preformed poorly as shown from an AUC value of 0.7520284 From the confusion matrix, we can determine that the accuracy is 0.8386, the sensitivity is 0.2334047, the specificity is 0.9776193, and the precision is 0.7055016 Based on the low accurcay, sensitivy, precision, and auc values, the total classification is pretty poor, the true positive rate and the positive predicted value are low, and the the model overall is a poor predictor. However, the high specificity means that the true negative rate is high.*
+
+```{R}
+#10-fold CV
+set.seed(1234)
+k=10
+
+data<-sample1[sample(nrow(sample1)),]
+folds<-cut(seq(1:nrow(sample1)),breaks=k,labels=F)
+diags<-NULL
+for(i in 1:k){
+  train<-data[folds!=i,]
+  test<-data[folds==i,]
+  truth<-test$physlim 
+  fit<-glm(physlim~.,data=train,family="binomial")
+  probs<-predict(fit,newdata = test,type="response")
+  diags<-rbind(diags,class_diag(probs,truth))
+}
+summarize_all(diags,mean)
+```
+
+*My model preformed poorly as shown from an AUC value of 0.7495406 for 10-fold CV. From the confusion matrix, we can determine that the accuracy is 0.8368, the sensitivity is 	0.2243073, the specificity is 0.9778915, and the precision is 0.6968321 Based on the low accurcay, sensitivy, precision, and auc values, the total classification is pretty poor, the true positive rate and the positive predicted value are low, and the the model overall is a poor predictor. However, the high specificity means that the true negative rate is high.*
+
+```{R}
+#LASSO
+set.seed(1234)
+
+y<-as.matrix(sample1$physlim)
+x<-model.matrix(physlim~.,data=sample1)[,-1]
+x<-scale(x)
+
+cv <-cv.glmnet(x,y,family="binomial")
+lasso<-glmnet(x,y,family="binomial",lambda=cv$lambda.1se)
+coef(lasso)
+
+#Cross Validation
+sample2<-sample1%>%mutate(fair=ifelse(health=="fair",1,0))%>%
+  mutate(poor=ifelse(health=="poor",1,0))%>%select(physlim, ndisease, fair, poor,
+                                                   educdec,logit)
+```
+*The variables that were retained after running the LASSO were number of diseases, fair (health), poor (health), years of education, and logit.*
+
+```{R}
+#10 fold CV of variable lasso selected 
+set.seed(1234)
+k=10
+data<-sample2[sample(nrow(sample2)),] 
+folds<-cut(seq(1:nrow(sample2)),breaks=k,labels=F) 
+diags<-NULL
+for(i in 1:k){
+train<-data[folds!=i,]
+test<-data[folds==i,]
+truth<-test$physlim
+fit <- glm(physlim~ndisease+fair+poor+educdec+logit, 
+           data=sample2,family="binomial")
+probs<-predict(fit,newdata = test,type="response")
+diags<-rbind(diags,class_diag(probs,truth))
+}
+summarize_all(diags,mean)
+
+```
+*My model preformed poorly as shown from an AUC value of 0.744532 after preforming the LASSO and running the 10-fold CV. From the confusion matrix, we can determine that the accuracy is 0.8364	, the sensitivity is 	0.2280644, the specificity is 0.976401, and the precision is 0.6854399 Based on the low accurcay, sensitivy, precision, and auc values, the total classification is pretty poor, the true positive rate and the positive predicted value are low, and the the model overall is a poor predictor. However, the high specificity means that the true negative rate is high. This LASSO AUC was a worse predictor than the 10-fold CV (no LASSO) because it has a lower AUC, accuracy, specificity, and precision. However the sensitivity was higher.*
+
+The End.

@@ -1,0 +1,53 @@
+date,time,game,team 1 score,team 2 score,attendance,venue,referee
+6/7/19,21:00,france-south_korea,4,0,45261,Parc des Princes,Claudia Umpierrez
+6/8/19,15:00,germany-china,1,0,15283,Roazhon Park,Marie-Soleil Beaudoin
+6/8/19,18:00,spain-south_africa,3,1,12044,Stade Oceane,Maria Carvajal
+6/8/19,21:00,norway-nigeria,3,0,11058,Stade Auguste-Delaune II,Kate Jacewicz
+6/9/19,13:00,australia-italy,1,2,15380,Stade du Hainaut,Melissa Borjas
+6/9/19,15:30,brazil-jamaica,3,0,17668,Stade des Alpes,Riem Hussein
+6/9/19,18:00,england-scotland,2,1,13188,Stade de Nice,Jana Adamkova
+6/10/19,18:00,argentina-japan,0,0,25055,Parc des Princes,Stephanie Frappart
+6/10/19,21:00,canada-cameroon,1,0,10710,Stade de la Mosson,Ri Hyang Ok
+6/11/19,15:00,new_zealand-netherlands,0,1,10654,Stade Oceane,Edina Alves Batista
+6/11/19,18:00,chile-sweden,0,2,15875,Roazhon Park,Lucila Venegas
+6/11/19,21:00,usa-thailand,13,0,18591,Stade Auguste-Delaune II,Laura Fortunato
+6/12/19,15:00,nigeria-south_korea,2,0,11252,Stade des Alpes,Anastasia Pustovoitova
+6/12/19,18:00,germany-spain,1,0,20761,Stade du Hainaut,Kateryna Monzul
+6/12/19,21:00,france-norway,2,1,34872,Stade de Nice,Bibiana Steinhaus
+6/13/19,18:00,australia-brazil,3,2,17032,Stade de la Mosson,Esther Staubli
+6/13/19,21:00,south_africa-china,0,1,20011,Parc des Princes,Katalin Kulcsar
+6/14/19,15:00,japan-scotland,2,1,13201,Roazhon Park,Lidya Tafesse
+6/14/19,18:00,jamaica-italy,0,5,12016,Stade Auguste-Delaune II,Anna-Marie Keighley
+6/14/19,21:00,england-argentina,1,0,20294,Stade Oceane,Qin Liang
+6/15/19,15:00,netherlands-cameroon,3,1,22423,Stade du Hainaut,Casey Reibelt
+6/15/19,21:00,canada-new_zealand,2,0,14856,Stade des Alpes,Yoshimi Yamashita
+6/16/19,15:00,sweden-thailand,5,1,9354,Stade de Nice,Salma Mukansanga
+6/16/19,18:00,usa-chile,3,0,45594,Parc des Princes,Riem Hussein
+6/17/19,18:00,south_africa-germany,0,4,11814,Stade Oceane,Edina Alves Batista
+6/17/19,18:00,china-spain,0,0,15502,Stade de la Mosson,Sandra Braz
+6/17/19,21:00,south_korea-norway,1,2,28267,Roazhon Park,Melissa Borjas
+6/17/19,21:00,nigeria-france,0,1,13034,Stade Auguste-Delaune II,Marie-Soleil Beaudoin
+6/18/19,21:00,jamaica-australia,1,4,17402,Stade des Alpes,Katalin Kulcsar
+6/18/19,21:00,italy-brazil,0,1,21669,Stade du Hainaut,Lucila Venegas
+6/19/19,21:00,japan-england,0,2,28205,Parc des Princes,Ri Hyang Ok
+6/19/19,21:00,scotland-argentina,3,3,14319,Stade de Nice,Claudia Umpierrez
+6/20/19,18:00,netherlands-canada,2,1,19277,Stade Auguste-Delaune II,Stephanie Frappart
+6/20/19,18:00,cameroon-new_zealand,2,1,8009,Stade de la Mosson,Kateryna Monzul
+6/20/19,21:00,thailand-chile,0,2,13567,Roazhon Park,Anna-Marie Keighley
+6/20/19,21:00,sweden-usa,0,2,22418,Stade Oceane,Anastasia Pustovoitova
+6/22/19,17:30,germany-nigeria,3,0,17988,Stade des Alpes,Yoshimi Yamashita
+6/22/19,21:00,norway-australia,1,1,19045,Stade de Nice,Riem Hussein
+6/23/19,17:30,england-cameroon,3,0,20148,Stade du Hainaut,Qin Liang
+6/23/19,21:00,france-brazil,2,1,23786,Stade Oceane,Marie-Soleil Beaudoin
+6/24/19,18:00,spain-usa,1,2,19633,Stade Auguste-Delaune II,Katalin Kulcsar
+6/24/19,21:00,sweden-canada,1,0,38078,Parc des Princes,Kate Jacewicz
+6/25/19,18:00,italy-china,2,0,17492,Stade de la Mosson,Edina Alves Batista
+6/25/19,21:00,netherlands-japan,2,1,21076,Roazhon Park,Melissa Borjas
+6/27/19,21:00,norway-england,0,3,21111,Stade Oceane,Lucila Venegas
+6/28/19,21:00,france-usa,1,2,45595,Parc des Princes,Kateryna Monzul
+6/29/19,15:00,italy-netherlands,0,2,22600,Stade du Hainaut,Claudia Umpierrez
+6/29/19,18:30,germany-sweden,1,2,25301,Roazhon Park,Stephanie Frappart
+7/2/19,21:00,england-usa,1,2,53512,Groupama Stadium,Edina Alves Batista
+7/3/19,21:00,netherlands-sweden,1,0,48452,Groupama Stadium,Marie-Soleil Beaudoin
+7/6/19,17:00,england-sweden,1,2,20316,Stade de Nice,Anastasia Pustovoitova
+7/7/19,17:00,usa-netherlands,2,0,57900,Groupama Stadium,Stephanie Frapp
