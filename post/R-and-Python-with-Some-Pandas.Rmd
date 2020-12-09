@@ -13,3 +13,19 @@ description: ''
 #Do You Mean Real Pandas?
 
 Unfortunatly no, but that would make R and Python exponentially cooler. 
+
+## Showing off using R and Python Together
+
+```{R}
+
+
+```
+
+## What is Pandas?
+
+```{python}
+
+
+```
+
+
