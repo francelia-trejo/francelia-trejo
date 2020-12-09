@@ -16,11 +16,14 @@ Unfortunatly no, but that would make R and Python exponentially cooler.
 
 ## Showing off using R and Python Together
 
-```{R}
-
-
+```{r}
+library(reticulate)
+something <-"This Is"
 ```
 
+```{python}
+
+```
 ## What is Pandas?
 
 ```{python}
