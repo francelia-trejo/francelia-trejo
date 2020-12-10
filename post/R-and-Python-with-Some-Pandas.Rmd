@@ -10,7 +10,7 @@ description: ''
 
 ![ ](/img/pandaa.jpg)
 
-#Do You Mean Real Pandas?
+# Do You Mean Real Pandas?
 
 Unfortunatly no, but that would make R and Python exponentially cooler. 
 
@@ -18,17 +18,19 @@ Unfortunatly no, but that would make R and Python exponentially cooler.
 
 ```{r}
 library(reticulate)
-something <-"This Is"
 ```
 
-```{python}
-
-```
 ## What is Pandas?
 
 ```{python}
+import pandas as pd
+quakes=pd.read_csv("https://vincentarelbundock.github.io/Rdatasets/csv/datasets/quakes.csv",index_col=0)
 
-
+print(quakes[:10])
+quakes.shape
 ```
+
+
+
 
 

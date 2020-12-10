@@ -13,8 +13,8 @@
       <pubDate>Wed, 09 Dec 2020 00:00:00 +0000</pubDate>
       
       <guid>/post/2020/12/09/r-and-python-with-some-pandas/</guid>
-      <description>   Do You Mean Real Pandas? Unfortunatly no, but that would make R and Python exponentially cooler.
-Showing off using R and Python Together library(reticulate) something &amp;lt;-&amp;quot;This Is&amp;quot;  What is Pandas?   </description>
+      <description>Do You Mean Real Pandas? Unfortunatly no, but that would make R and Python exponentially cooler.
+Showing off using R and Python Together library(reticulate)  What is Pandas? import pandas as pd quakes=pd.read_csv(&amp;quot;https://vincentarelbundock.github.io/Rdatasets/csv/datasets/quakes.csv&amp;quot;,index_col=0) print(quakes[:10]) ## lat long depth mag stations ## 1 -20.42 181.62 562 4.8 41 ## 2 -20.62 181.03 650 4.2 15 ## 3 -26.00 184.10 42 5.4 43 ## 4 -17.97 181.66 626 4.1 19 ## 5 -20.</description>
     </item>
     
   </channel>
