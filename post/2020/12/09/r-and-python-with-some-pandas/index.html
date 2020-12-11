@@ -75,18 +75,20 @@
 
 
 <div class="figure">
-<img src="../../../../../img/pandaa.jpg" />
+<img src="https://i.pinimg.com/originals/e0/3d/5b/e03d5b812b2734826f76960eca5b5541.jpg" />
 
 </div>
 <div id="do-you-mean-real-pandas" class="section level1">
 <h1>Do You Mean Real Pandas?</h1>
-<p>Unfortunatly no, but that would make R and Python exponentially cooler.</p>
+<p>Unfortunatly no, but that would make R and Python exponentially cooler. As it turns out, although R and Python are completely different languages, YOU have the power to instantly add Python to your chunk of R code. Once you are able to do that, then you can start using things like panda and be able to manipulate your data hopefuly more efficently (double the languages!).</p>
 <div id="showing-off-using-r-and-python-together" class="section level2">
 <h2>Showing off using R and Python Together</h2>
+<p>Being able to use Python and R in R Studio is as easy as installing a package called reticulate. Just run it from your library and bam, you are good to go.</p>
 <pre class="r"><code>library(reticulate)</code></pre>
 </div>
 <div id="what-is-pandas" class="section level2">
 <h2>What is Pandas?</h2>
+<p>Now, we are able to import pandas in a Python. This will alos you to manipulate your datasets and ais in analysis. Functions like print will show your dataset, and .shape to see that there are a 1000 rows and 5 variables in the 'quakes' dataset. All of the different functions just make everything clearer and easier to handle.</p>
 <pre class="python"><code>import pandas as pd
 quakes=pd.read_csv(&quot;https://vincentarelbundock.github.io/Rdatasets/csv/datasets/quakes.csv&quot;,index_col=0)
 
@@ -104,6 +106,7 @@ print(quakes[:10])</code></pre>
 ## 10 -17.47  179.59    622  4.3        19</code></pre>
 <pre class="python"><code>quakes.shape</code></pre>
 <pre><code>## (1000, 5)</code></pre>
+<p>Make sure to give this a try and tell me how your experience with Pything in R Studio and Pandas was!!</p>
 </div>
 </div>
 
